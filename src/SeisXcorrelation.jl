@@ -99,6 +99,11 @@ function seisxcorrelation(data::Dict, tstamp::String, InputDict::Dict)
                 filter!(a->a≠stn1, stlist)
                 println("$tstamp: $stn1 encountered an error: dlerror==1. Skipping.")
                 continue
+            elseif  sum(iszero.(S1[1].x)) > 0.5*length(S1[1].x) # skip if > 50% zeros
+                push!(tserrorList, "$tstamp/$stn1")
+                filter!(a->a≠stn1, stlist)
+                println("$tstamp: $stn1 has >50% zeros. Skipping.")
+                continue
             end
         catch;
             # assume key "dlerror" does not exist (not downloaded via SeisDownload)
@@ -165,6 +170,11 @@ function seisxcorrelation(data::Dict, tstamp::String, InputDict::Dict)
                         push!(tserrorList, "$tstamp/$stn2")
                         filter!(a->a≠stn2, stlist)
                         println("$tstamp: $stn2 encountered an error: dlerror==1. Skipping.")
+                        continue
+                    elseif  sum(iszero.(S2[1].x)) > 0.5*length(S2[1].x) # skip if > 50% zeros
+                        push!(tserrorList, "$tstamp/$stn2")
+                        filter!(a->a≠stn2, stlist)
+                        println("$tstamp: $stn2 has >50% zeros. Skipping.")
                         continue
                     end
                 catch;
