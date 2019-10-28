@@ -34,7 +34,7 @@ Compute cross-correlation save data in jld2 file with CorrData format.
 - `basefoname.tstamp.jld2`    : contains CorrData structure with a hierarchical structure (CC function, metadata)
 
 """
-function seisxcorrelation(data::Dict, tstamp::String, InputDict::Dict)
+function seisxcorrelation(data::Dict, tstamp::String, InputDict::Dict;verbose=false)
     # IO parameters
     basefoname = InputDict["basefoname"]
     time_unit  = InputDict["timeunit"]
@@ -199,7 +199,7 @@ function seisxcorrelation(data::Dict, tstamp::String, InputDict::Dict)
                     if stn2 in keys(FFTDict)
                         FFTDict[stn2]
                     else
-                        println("fft2 -ing")
+                        if verbose; println("fft2 -ing");end
                         #the following are new steps to do FFT
                         process_raw!(S2,fs)
                         R2=RawData(S2,cc_len,cc_step)
@@ -228,14 +228,14 @@ function seisxcorrelation(data::Dict, tstamp::String, InputDict::Dict)
             # but each signal can be both source and receiver
             # smooth FFT2 if it hasn't been smoothed already
             if corrmethod == "coherence"
-                println("coherence -ing")
+                if verbose; println("coherence -ing");end
                 xcorr = compute_cc(coherence(FFT1, half_win,water_level), coherence(FFT2, half_win,water_level), maxtimelag, corr_type=corrmethod)
                 # coherence!(FFT1, half_win,water_level)
                 # coherence!(FFT2, half_win,water_level)
             elseif corrmethod == "deconv"
-                println("deconv -ing")
+                if verbose; println("deconv -ing");end
                 # deconvolution!(FFT2, half_win,water_level)
-                xcorr = compute_cc(FFT1, deconvolution!(FFT2, half_win,water_level), maxtimelag, corr_type=corrmethod)
+                xcorr = compute_cc(FFT1, deconvolution(FFT2, half_win,water_level), maxtimelag, corr_type=corrmethod)
             else
                 # compute correlation using SeisNoise.jl -- returns type CorrData
                 xcorr = compute_cc(FFT1, FFT2, maxtimelag, corr_type=corrmethod)
