@@ -205,7 +205,7 @@ function seisxcorrelation(data::Dict, tstamp::String, InputDict::Dict)
                         R2=RawData(S2,cc_len,cc_step)
                         detrend!(R2)
                         taper!(R2)
-                        FFT1 = compute_fft(R2)
+                        FFT2 = compute_fft(R2)
                         # FFT2 = compute_fft(S2, freqmin, freqmax, fs, Int(cc_step), Int(cc_len), to_whiten=to_whiten, time_norm=time_norm)
 
                         # store FFT2 in dict after smoothing
