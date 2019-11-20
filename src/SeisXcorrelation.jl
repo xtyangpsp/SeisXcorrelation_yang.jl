@@ -54,6 +54,7 @@ function seisxcorrelation(data::Dict, tstamp::String, InputDict::Dict;verbose=fa
     maxtimelag = InputDict["maxtimelag"]
     # stacking parameters
     stack      = InputDict["allstack"]
+    stacktype  = InputDict["stacktype"]
     # dictionary to cache FFTs
     FFTDict = Dict{String, FFTData}()
     # list of stations that failed for this timestep
@@ -126,13 +127,6 @@ function seisxcorrelation(data::Dict, tstamp::String, InputDict::Dict;verbose=fa
                 taper!(R1)
                 FFT1 = compute_fft(R1)
 
-                # FFT1 = compute_fft(S1, freqmin, freqmax, fs, Int(cc_step), Int(cc_len), to_whiten=to_whiten, time_norm=time_norm)
-                # smooth FFT1 only if coherence is selected. Deconvolution will use only FFT2.
-                # if corrmethod == "coherence"
-                #     println("coherence1 -ing")
-                #     coherence!(FFT1, half_win,water_level)
-                # end
-                # store FFT1
                 FFTDict[stn1] = FFT1
                 FFT1
             end
@@ -235,7 +229,7 @@ function seisxcorrelation(data::Dict, tstamp::String, InputDict::Dict;verbose=fa
             elseif corrmethod == "deconv"
                 if verbose; println("deconv -ing");end
                 # deconvolution!(FFT2, half_win,water_level)
-                xcorr = compute_cc(FFT1, deconvolution(FFT2, half_win,water_level), maxtimelag, corr_type=corrmethod)
+                xcorr = compute_cc(deconvolution(FFT1, half_win,water_level),FFT2,  maxtimelag, corr_type=corrmethod)
             else
                 # compute correlation using SeisNoise.jl -- returns type CorrData
                 xcorr = compute_cc(FFT1, FFT2, maxtimelag, corr_type=corrmethod)
@@ -249,7 +243,7 @@ function seisxcorrelation(data::Dict, tstamp::String, InputDict::Dict;verbose=fa
                 xcorr.misc["location"] = Dict(stn1=>FFT1.loc, stn2=>FFT2.loc)
 
                 # stack over DL_time_unit
-                if stack==true stack!(xcorr, allstack=true) end
+                if stack==true stack!(xcorr, allstack=true,stacktype=stacktype) end
 
                 outFile[varname] = xcorr
             catch
