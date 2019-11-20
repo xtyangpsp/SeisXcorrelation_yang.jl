@@ -38,7 +38,7 @@ end
     corrtype(stnPair::Array{String, 1})
 
 Determine correlation type (cross-correlation, auto-correlation, or cross-channel-correlation) using string slicing.
-
+The station string must be: NET.STA.LOC.CHAN
 # Arguments
 - `stnPair::Array{String, 1},`    : Station pair, e.g. ["BP.SMNB..BP1", "BP.SMNB..BP3"]
 
@@ -47,11 +47,15 @@ Determine correlation type (cross-correlation, auto-correlation, or cross-channe
 
 """
 function get_corrtype(stnPair::Array{String, 1})
+    stn1=join(split(stnPair[1],".")[1:3],".")
+    stn2=join(split(stnPair[2],".")[1:3],".")
+    chan1=split(stnPair[1],".")[4]
+    chan2=split(stnPair[2],".")[4]
     # same station, same channel
     if stnPair[1] == stnPair[2]
         ct = "acorr"
     # same station, different channel
-    elseif (stnPair[1][end-3:end] != stnPair[2][end-3:end]) && (stnPair[1][1:end-3] == stnPair[2][1:end-3])
+    elseif (stn1 == stn2) && (chan1 != chan2) #(stnPair[1][end-3:end] != stnPair[2][end-3:end]) && (stnPair[1][1:end-3] == stnPair[2][1:end-3])
         ct = "xchancorr"
     # different station
     else
