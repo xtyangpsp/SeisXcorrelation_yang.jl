@@ -119,7 +119,7 @@ function seisxcorrelation(data::Dict, tstamp::String, InputDict::Dict;verbose=fa
             if stn1 in keys(FFTDict)
                 FFTDict[stn1]
             else
-                println("fft1 -ing")
+                if verbose; println("fft1 -ing");end
                 #the following are new steps to do FFT
                 process_raw!(S1,fs)
                 R1=RawData(S1,cc_len,cc_step)
