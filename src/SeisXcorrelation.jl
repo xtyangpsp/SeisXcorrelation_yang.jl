@@ -243,7 +243,13 @@ function seisxcorrelation(data::Dict, tstamp::String, InputDict::Dict;verbose=fa
                 xcorr.misc["location"] = Dict(stn1=>FFT1.loc, stn2=>FFT2.loc)
 
                 # stack over DL_time_unit
-                if stack==true stack!(xcorr, allstack=true,stacktype=stacktype) end
+                if stack==true
+                    if stacktype=="mean"
+                        stack!(xcorr, allstack=true) #default is mean stacking/linear stacking.
+                    else
+                        stack!(xcorr, allstack=true,stacktype=stacktype)
+                    end
+                end
 
                 outFile[varname] = xcorr
             catch
