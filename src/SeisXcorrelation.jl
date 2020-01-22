@@ -134,7 +134,7 @@ function seisxcorrelation(data::Dict, tstamp::String, InputDict::Dict;verbose=fa
                 if to_whiten
                     whiten!(R1,freqmin,freqmax)
                 end
-                if time_norm || time_norm == "one-bit" || time_norm == "phase"
+                if time_norm == "one-bit" || time_norm == "phase"
                     if time_norm == "one-bit"
                         onebit!(R1);
                     end
@@ -222,7 +222,7 @@ function seisxcorrelation(data::Dict, tstamp::String, InputDict::Dict;verbose=fa
                         if to_whiten
                             whiten!(R2,freqmin,freqmax)
                         end
-                        if time_norm || time_norm == "one-bit" || time_norm == "phase"
+                        if time_norm == "one-bit" || time_norm == "phase"
                             if time_norm == "one-bit"
                                 onebit!(R2);
                             end
