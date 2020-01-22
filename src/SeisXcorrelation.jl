@@ -123,8 +123,22 @@ function seisxcorrelation(data::Dict, tstamp::String, InputDict::Dict;verbose=fa
                 #the following are new steps to do FFT
                 process_raw!(S1,fs)
                 R1=RawData(S1,cc_len,cc_step)
+                R1.freqmin=freqmin;
+                R1.freqmax=freqmax;
+                R1.whitened=to_whiten;
+                R1.time_norm=time_norm;
+
                 detrend!(R1)
                 taper!(R1)
+
+                if to_whiten
+                    whiten!(R1,freqmin,freqmax)
+                end
+                if time_norm || time_norm == "one-bit" || time_norm == "phase"
+                    if time_norm == "one-bit"
+                        onebit!(R1);
+                    end
+                end
                 FFT1 = compute_fft(R1)
 
                 FFTDict[stn1] = FFT1
@@ -197,8 +211,22 @@ function seisxcorrelation(data::Dict, tstamp::String, InputDict::Dict;verbose=fa
                         #the following are new steps to do FFT
                         process_raw!(S2,fs)
                         R2=RawData(S2,cc_len,cc_step)
+                        R2.freqmin=freqmin;
+                        R2.freqmax=freqmax;
+                        R2.whitened=to_whiten;
+                        R2.time_norm=time_norm;
+
                         detrend!(R2)
                         taper!(R2)
+
+                        if to_whiten
+                            whiten!(R2,freqmin,freqmax)
+                        end
+                        if time_norm || time_norm == "one-bit" || time_norm == "phase"
+                            if time_norm == "one-bit"
+                                onebit!(R2);
+                            end
+                        end
                         FFT2 = compute_fft(R2)
                         # FFT2 = compute_fft(S2, freqmin, freqmax, fs, Int(cc_step), Int(cc_len), to_whiten=to_whiten, time_norm=time_norm)
 
