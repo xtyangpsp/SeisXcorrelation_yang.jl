@@ -131,16 +131,15 @@ function seisxcorrelation(data::Dict, tstamp::String, InputDict::Dict;verbose=fa
                 detrend!(R1)
                 taper!(R1)
 
-                if to_whiten
-                    whiten!(R1,freqmin,freqmax)
-                end
                 if time_norm == "one-bit" || time_norm == "phase"
                     if time_norm == "one-bit"
                         onebit!(R1);
                     end
                 end
                 FFT1 = compute_fft(R1)
-
+                if to_whiten
+                    whiten!(FFT1,freqmin,freqmax)
+                end
                 FFTDict[stn1] = FFT1
                 FFT1
             end
@@ -219,15 +218,15 @@ function seisxcorrelation(data::Dict, tstamp::String, InputDict::Dict;verbose=fa
                         detrend!(R2)
                         taper!(R2)
 
-                        if to_whiten
-                            whiten!(R2,freqmin,freqmax)
-                        end
                         if time_norm == "one-bit" || time_norm == "phase"
                             if time_norm == "one-bit"
                                 onebit!(R2);
                             end
                         end
                         FFT2 = compute_fft(R2)
+                        if to_whiten
+                            whiten!(FFT2,freqmin,freqmax)
+                        end
                         # FFT2 = compute_fft(S2, freqmin, freqmax, fs, Int(cc_step), Int(cc_len), to_whiten=to_whiten, time_norm=time_norm)
 
                         # store FFT2 in dict after smoothing
