@@ -66,7 +66,8 @@ function seisxcorrelation(data::Dict, tstamp::String, InputDict::Dict;verbose=fa
     stlist = sort([string(split.(dsk[i], "/")[2]) for i=1:length(dsk)])
 
     # create output file for each time stamp, fill relevant info
-    outFile = jldopen("$basefoname.$tstamp.jld2", "a+")
+    # outFile = jldopen("$basefoname.$tstamp.jld2", "a+")
+    outFile = jldopen("$basefoname.$tstamp.jld2", true, true, true, IOStream)
     outFile["info/stationlist"] = stlist
     outFile["info/timeunit"] = time_unit
 
