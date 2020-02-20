@@ -94,6 +94,13 @@ function seisxcorrelation(data::Dict, tstamp::String, InputDict::Dict;verbose=fa
         delete!(S1[1].misc, "kurtosis")
         delete!(S1[1].misc, "eqtimewindow")
 
+        # make sure the data is the proper length to avoid dimension mismatch
+        npts1 = Int(time_unit * S1[1].fs)
+        if (length(S1[1].x) > npts1)
+            S1[1].x=S1[1].x[1:npts1];
+            idxtemp=findall(x->x<=npts1,S1[1].t[:,1])
+            S1[1].t=S1[1].t[idxtemp,:];
+        end
         # do not attempt fft if data was not available
         try
             if S1[1].misc["dlerror"] == 1
@@ -115,10 +122,6 @@ function seisxcorrelation(data::Dict, tstamp::String, InputDict::Dict;verbose=fa
         catch;
             # assume key "dlerror" does not exist (not downloaded via SeisDownload)
         end
-
-        # make sure the data is the proper length to avoid dimension mismatch
-        npts1 = Int(time_unit * S1[1].fs)
-        if (length(S1[1].x) > npts1) S1[1].x=S1[1].x[1:npts1]; S1[1].t[2,1]=npts1 end
 
         FFT1 = try
             # try to read FFT from cached FFTs
@@ -185,7 +188,13 @@ function seisxcorrelation(data::Dict, tstamp::String, InputDict::Dict;verbose=fa
                 if S1.n > 1 @warn "SeisData contains multiple channels. Operating only on the first." end
                 delete!(S2[1].misc, "kurtosis")
                 delete!(S2[1].misc, "eqtimewindow")
-
+                # make sure the data is the proper length to avoid dimension mismatch
+                npts2 = Int(time_unit * S2[1].fs)
+                if (length(S2[1].x) > npts2)
+                    S2[1].x=S2[1].x[1:npts2];
+                    idxtemp=findall(x->x<=npts2,S2[1].t[:,1])
+                    S2[1].t=S2[1].t[idxtemp,:];
+                end
                 # do not attempt fft if data was not available, >50% zeros, or has gaps.
                 try
                     if S2[1].misc["dlerror"] == 1
@@ -207,10 +216,10 @@ function seisxcorrelation(data::Dict, tstamp::String, InputDict::Dict;verbose=fa
                 catch;
                     # assume that the key dlerror does not exist (data not downloaded via SeisDownload)
                 end
-
-                # make sure the data is the proper length to avoid dimension mismatch
-                npts2 = Int(time_unit * S2[1].fs)
-                if (length(S2[1].x) > npts2) S2[1].x=S2[1].x[1:npts2]; S2[1].t[2,1]=npts2 end
+                #
+                # # make sure the data is the proper length to avoid dimension mismatch
+                # npts2 = Int(time_unit * S2[1].fs)
+                # if (length(S2[1].x) > npts2) S2[1].x=S2[1].x[1:npts2]; S2[1].t[end,1]=npts2 end
 
                 # try to read FFT from cached FFTs, compute if not found
                 FFT2 = try
