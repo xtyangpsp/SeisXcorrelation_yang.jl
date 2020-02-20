@@ -106,6 +106,11 @@ function seisxcorrelation(data::Dict, tstamp::String, InputDict::Dict;verbose=fa
                 filter!(a->a≠stn1, stlist)
                 println("$tstamp: $stn1 has >50% zeros. Skipping.")
                 continue
+            elseif  size(S1[1].t,1)>2
+                push!(tserrorList, "$tstamp/$stn2")
+                filter!(a->a≠stn2, stlist)
+                println("$tstamp: $stn2 has $(size(S1[1].t,1)-2) gaps. Skipping.")
+                continue
             end
         catch;
             # assume key "dlerror" does not exist (not downloaded via SeisDownload)
@@ -181,7 +186,7 @@ function seisxcorrelation(data::Dict, tstamp::String, InputDict::Dict;verbose=fa
                 delete!(S2[1].misc, "kurtosis")
                 delete!(S2[1].misc, "eqtimewindow")
 
-                # do not attempt fft if data was not available
+                # do not attempt fft if data was not available, >50% zeros, or has gaps.
                 try
                     if S2[1].misc["dlerror"] == 1
                         push!(tserrorList, "$tstamp/$stn2")
@@ -192,6 +197,11 @@ function seisxcorrelation(data::Dict, tstamp::String, InputDict::Dict;verbose=fa
                         push!(tserrorList, "$tstamp/$stn2")
                         filter!(a->a≠stn2, stlist)
                         println("$tstamp: $stn2 has >50% zeros. Skipping.")
+                        continue
+                    elseif  size(S2[1].t,1)>2
+                        push!(tserrorList, "$tstamp/$stn2")
+                        filter!(a->a≠stn2, stlist)
+                        println("$tstamp: $stn2 has $(size(S2[1].t,1)-2) gaps. Skipping.")
                         continue
                     end
                 catch;
