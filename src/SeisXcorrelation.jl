@@ -39,9 +39,9 @@ function seisxcorrelation(data::Dict, tstamp::String, InputDict::Dict;verbose=fa
     basefoname = InputDict["basefoname"]
     time_unit  = InputDict["timeunit"]
     # FFT parameters
-    freqmin    = InputDict["freqmin"]
-    freqmax    = InputDict["freqmax"]
-    fs         = InputDict["fs"]
+    freqmin    = Float64(InputDict["freqmin"])
+    freqmax    = Float64(InputDict["freqmax"])
+    fs         = Float64(InputDict["fs"])
     cc_len     = InputDict["cc_len"]
     cc_step    = InputDict["cc_step"]
     to_whiten  = InputDict["to_whiten"]
